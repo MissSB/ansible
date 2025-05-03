@@ -10,17 +10,6 @@ jobs:
   ansible:
     name: Ansible Checks
     runs-on: ubuntu-latest
-
-    - name: Add EC2 to known hosts
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
-
-    - name: Run Ansible Playbook
-      run: ansible-playbook playbook.yml --check -i inventory.ini
-      env:
-        ANSIBLE_HOST_KEY_CHECKING: "False"
-        ANSIBLE_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -31,6 +20,11 @@ jobs:
         sudo apt install -y ansible
         pip install ansible-lint
 
+    - name: Add EC2 to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+
     - name: Run ansible-lint
       run: ansible-lint playbook.yml
 
@@ -38,4 +32,8 @@ jobs:
       run: ansible-playbook playbook.yml --syntax-check -i inventory.ini
 
     - name: Run Ansible dry-run (check mode)
-      run: ansible-playbook playbook.yml --check -i inventory.ini
+      run: |
+        ansible-playbook playbook.yml --check -i inventory.ini
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+          ANSIBLE_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
