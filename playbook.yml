@@ -4,13 +4,19 @@
   become: true
   tasks:
     - name: Install NGINX
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: nginx
         state: present
+      tags: install
 
     - name: Start and enable NGINX
       ansible.builtin.service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
+  handlers:
+    - name: Restart NGINX
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
 
