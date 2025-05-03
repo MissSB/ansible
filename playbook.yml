@@ -1,0 +1,16 @@
+---
+- name: Configure EC2 instance
+  hosts: web
+  become: true
+  tasks:
+    - name: Install NGINX
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+
+    - name: Start and enable NGINX
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+
