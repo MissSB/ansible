@@ -30,7 +30,7 @@ jobs:
     - name: Add EC2 to known hosts
       run: |
         mkdir -p ~/.ssh
-        ssh-keyscan ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+        ssh-keyscan ${{ secrets.EC2_IP }} >> ~/.ssh/my-key.pem
     
     - name: Setup SSH key
       run: |
