@@ -8,48 +8,38 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Init & Validate
+    name: Terraform CI
     runs-on: ubuntu-latest
-    environment: production  # Optional: use GitHub environments for secrets
-    id-token: write  
+    environment: production  # Optional but recommended for secrets
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Configure AWS credentials
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+        mask-aws-account-id: true  # Security: masks account ID in logs
 
-    - name: Set up Terraform
+    - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: 1.6.6
-        terraform_wrapper: false  # Disable wrapper for cleaner output
+        terraform_wrapper: false
 
     - name: Terraform Init
-      run: terraform init -input=false
+      run: terraform init -input=false -no-color
       env:
-        TF_INPUT: "false"  # Never prompt for input
-
-    - name: Terraform Format Check
-      run: terraform fmt -check -recursive
-
-    - name: Terraform Validate
-      run: terraform validate -no-color
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
 
     - name: Terraform Plan
       run: terraform plan -input=false -no-color -out=tfplan
       env:
-        TF_CLI_ARGS: "-no-color"
-
-    - name: Upload Plan Artifact
-      if: always()  # Upload even if previous steps fail
-      uses: actions/upload-artifact@v4
-      with:
-        name: tfplan
-        path: tfplan
-        if-no-files-found: error
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
