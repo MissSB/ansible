@@ -19,11 +19,23 @@ jobs:
         sudo apt update
         sudo apt install -y ansible
         pip install ansible-lint
+    
+    - name: Run Ansible playbook
+      run: ansible-playbook playbook.yml --check -i inventory.ini
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: "False"
+        ANSIBLE_SSH_PRIVATE_KEY_FILE: /tmp/ssh_key
+      shell: bash
 
     - name: Add EC2 to known hosts
       run: |
         mkdir -p ~/.ssh
         ssh-keyscan ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+    
+    - name: Setup SSH key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
+        chmod 600 /tmp/ssh_key
 
     - name: Run ansible-lint
       run: ansible-lint playbook.yml
