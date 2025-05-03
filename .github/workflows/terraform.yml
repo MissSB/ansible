@@ -11,10 +11,11 @@ jobs:
     name: Terraform Init & Validate
     runs-on: ubuntu-latest
     environment: production  # Optional: use GitHub environments for secrets
+    id-token: write  
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -41,16 +42,14 @@ jobs:
       run: terraform validate -no-color
 
     - name: Terraform Plan
-      run: terraform plan -input=false -no-color -detailed-exitcode
+      run: terraform plan -input=false -no-color -out=tfplan
       env:
         TF_CLI_ARGS: "-no-color"
-      continue-on-error: true  # Allows workflow to continue on plan differences
 
     - name: Upload Plan Artifact
       if: always()  # Upload even if previous steps fail
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: terraform-plan
-        path: |
-          *.tfplan
-          plan.out
+        name: tfplan
+        path: tfplan
+        if-no-files-found: error
