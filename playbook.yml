@@ -8,7 +8,6 @@
         name: nginx
         state: present
       tags: install
-
     - name: Start and enable NGINX
       ansible.builtin.service:
         name: nginx
