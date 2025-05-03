@@ -1,0 +1,31 @@
+name: Ansible Lint & Syntax Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ansible:
+    name: Ansible Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Ansible and ansible-lint
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+        pip install ansible-lint
+
+    - name: Run ansible-lint
+      run: ansible-lint playbook.yml
+
+    - name: Run Ansible syntax check
+      run: ansible-playbook playbook.yml --syntax-check -i inventory.ini
+
+    - name: Run Ansible dry-run (check mode)
+      run: ansible-playbook playbook.yml --check -i inventory.ini

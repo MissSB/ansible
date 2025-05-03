@@ -1,5 +1,7 @@
 # AWS EC2 Provisioning with Terraform and Ansible
 
+![Ansible Workflow](https://github.com/MissSB/ansible/actions/workflows/ansible.yml/badge.svg)
+
 This project provisions an AWS EC2 instance using Terraform, and configures it using Ansible.
 
 ## 🚀 What it Does
