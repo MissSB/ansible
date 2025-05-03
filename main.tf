@@ -1,5 +1,6 @@
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
+  profile = "myprofile"
 }
 
 data "aws_ami" "amazon_linux" {
@@ -55,11 +56,11 @@ resource "aws_security_group" "web_sg" {
 }
 
 resource "aws_instance" "web" {
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t2.micro"
-  key_name                    = "my-key" # Replace with your key
-  vpc_security_group_ids      = [aws_security_group.web_sg.id]
-  subnet_id                   = aws_subnet.main.id
+  ami                    = data.aws_ami.amazon_linux.id
+  instance_type          = "t2.micro"
+  key_name               = "my-key" # Replace with your key
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+  subnet_id              = aws_subnet.main.id
 
   tags = {
     Name = "Terraform-Ansible-Instance"
