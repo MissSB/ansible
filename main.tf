@@ -1,6 +1,5 @@
 provider "aws" {
-  region  = "us-east-1"
-  profile = "myprofile"
+  region = "us-east-1"
 }
 
 data "aws_ami" "amazon_linux" {
