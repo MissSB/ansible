@@ -1,4 +1,4 @@
-name: Ansible Lint & Syntax Check
+name: Ansible Lint and Syntax Check
 
 on:
   push:
