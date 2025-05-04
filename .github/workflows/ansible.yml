@@ -23,6 +23,7 @@ jobs:
 
     - name: Set up SSH key
       run: |
+        mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
         chmod 600 /tmp/ssh_key
         ssh-keyscan -H 44.223.80.103 >> ~/.ssh/known_hosts
