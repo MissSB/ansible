@@ -34,3 +34,4 @@ This project provisions an AWS EC2 instance using Terraform, and configures it u
    terraform apply
 ansible-playbook -i inventory.ini playbook.yml
 # Updated
+# Trigger Actions
