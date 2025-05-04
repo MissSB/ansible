@@ -17,12 +17,16 @@ jobs:
           sudo apt update
           sudo apt install -y ansible
           pip install ansible-lint
-      - name: Set up SSH key
+      - name: Setup SSH Environment
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
-          chmod 600 /tmp/ssh_key
-          ssh-keyscan -H 44.223.80.103 >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+
+        # Test connection
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} "echo SSH connection successful!"
       - name: Run ansible-lint
         run: ansible-lint playbook.yml
       - name: Run Ansible syntax check
@@ -31,4 +35,4 @@ jobs:
         run: ansible-playbook playbook.yml --check -i inventory.ini
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
-          ANSIBLE_SSH_PRIVATE_KEY_FILE: /tmp/ssh_key
+          ANSIBLE_SSH_PRIVATE_KEY_FILE: ~/.ssh/id_rsa
