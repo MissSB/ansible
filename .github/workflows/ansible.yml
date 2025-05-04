@@ -27,10 +27,12 @@ jobs:
         ANSIBLE_SSH_PRIVATE_KEY_FILE: /tmp/ssh_key
       shell: bash
 
-    - name: Add EC2 to known hosts
+    - name: Set up SSH key
       run: |
         mkdir -p ~/.ssh
-        ssh-keyscan ${{ secrets.EC2_IP }} >> ~/.ssh/my-key.pem
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/my-key.pem
+        chmod 600 ~/.ssh/my-key.pem
+        ssh-keyscan -H 44.223.80.103 >> ~/.ssh/known_hosts
     
     - name: Setup SSH key
       run: |
