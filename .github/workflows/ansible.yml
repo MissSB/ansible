@@ -34,11 +34,6 @@ jobs:
         chmod 600 ~/.ssh/my-key.pem
         ssh-keyscan -H 44.223.80.103 >> ~/.ssh/known_hosts
     
-    - name: Setup SSH key
-      run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/ssh_key
-        chmod 600 /tmp/ssh_key
-
     - name: Run ansible-lint
       run: ansible-lint playbook.yml
 
