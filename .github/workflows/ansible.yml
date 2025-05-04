@@ -20,12 +20,12 @@ jobs:
         sudo apt install -y ansible
         pip install ansible-lint
     
-    - name: Run Ansible playbook
+    - name: Run Ansible dry-run (check mode)
       run: ansible-playbook playbook.yml --check -i inventory.ini
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
-        ANSIBLE_SSH_PRIVATE_KEY_FILE: /tmp/ssh_key
-      shell: bash
+        ANSIBLE_SSH_PRIVATE_KEY_FILE: ~/.ssh/my-key.pem
+
 
     - name: Set up SSH key
       run: |
