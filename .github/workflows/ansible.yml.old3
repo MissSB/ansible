@@ -2,10 +2,9 @@ name: Ansible Lint and Syntax Check
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
-
+    branches: [ main ]
 jobs:
   ansible:
     name: Ansible Checks
@@ -13,38 +12,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Install Ansible and ansible-lint
         run: |
           sudo apt update
           sudo apt install -y ansible
-          pip install ansible-lint
-
       - name: Setup SSH Environment
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H $EC2_IP >> ~/.ssh/known_hosts
-        env:
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          EC2_IP: ${{ secrets.EC2_IP }}
-
-      - name: Test SSH Connection
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@$EC2_IP "echo SSH connection successful!"
-        env:
-          EC2_IP: ${{ secrets.EC2_IP }}
-
+          ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+        # Test connection
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP }} "echo SSH connection successful!"
       - name: Run ansible-lint
         run: ansible-lint playbook.yml
-
       - name: Run Ansible syntax check
         run: ansible-playbook playbook.yml --syntax-check -i inventory.ini
-
       - name: Run Ansible dry-run (check mode)
         run: ansible-playbook playbook.yml --check -i inventory.ini
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
-          ANSIBLE_PRIVATE_KEY_FILE: ~/.ssh/id_rsa
+          ANSIBLE_SSH_PRIVATE_KEY_FILE: ~/.ssh/id_rsa
